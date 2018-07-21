@@ -3,42 +3,34 @@ require("jsonlite")
 
 kucoin.base <- "https://api.kucoin.com"
 
-kucoin.endpoints <- list()
-kucoin.endpoints.listCoins <- list(name = "listCoins", urlPart = "/v1/market/open/coins")
 kucoin.endpoints.listTradingMarkets <- list(name = "listTradingMarkets", urlPart = "/v1/open/markets")
-kucoin.endpoints.listTradingSymbolsTick <- list(name = "listTradingSymbolsTick", urlPart = "/v1/market/open/symbols")
-kucoin.endpoints.recentlyDealOrders <- list(name = "recentlyDealOrder", urlPart="/v1/open/deal-orders")
-kucoin.endpoints.buyOrderBooks <- list(name = "buyOrderBooks", urlPart="/v1/open/orders-buy")
+
 kucoin.shared <- list()
 
-kucoin.shared.getCallingFunctionsName <- function(level = 1) {
+kucoin.shared$getCallingFunctionsName <- function(level = 1) {
   return (gsub(".*\\.", "", sys.calls()[[sys.nframe()-level]]))
 }
 
-kucoin.shared.getCallingFunctionsParameters <- function(level = 1) {
+kucoin.shared$getCallingFunctionsParameters <- function(level = 1) {
   parameters <- as.list(parent.frame(n = level))
   return (parameters)
 }
+kucoin.api <- list()
 
-kucoin.shared$genericNoParams <- function() {
-  endpointsName <- kucoin.shared.getCallingFunctionsName()  
-  return (kucoin.api(endpointName = endpointsName))
+kucoin.api$generic <- function(urlEndpointPart) {
+  parameters <- kucoin.shared$getCallingFunctionsParameters(level = 2)
+  url <- kucoin.shared$getUrl(urlEndpointPart = urlEndpointPart, parameters = parameters)
+  return (kucoin.api$request(url = url))
+}
+kucoin.shared$getUrl <- function(urlEndpointPart, parameters = NULL) {
+  urlParametersPart <- kucoin.shared$getParametersUrlPart(parameters)
+  return (paste(kucoin.base, urlEndpointPart, urlParametersPart, sep=""))
 }
 
-kucoin.shared$genericWithParams <- function() {
-  endpointsName <- kucoin.shared.getCallingFunctionsName(level = 2)
-  parameters <- kucoin.shared.getCallingFunctionsParameters(level = 2)
-  parametersUrlPart <- kucoin.shared$getParametersUrlPart(parameters)
-  return (kucoin.api(endpointName = endpointsName, parametersUrlPart = parametersUrlPart))
-}
-
-kucoin.shared$getUrl <- function(endpointName) {
-  endpoint = get(paste("kucoin.endpoints.", endpointName, sep=""))
-  endpointUrlPart <- get("urlPart", endpoint)
-  return (paste(kucoin.base, endpointUrlPart, sep=""))
-}
-
-kucoin.shared$getParametersUrlPart <- function(parameters) {
+kucoin.shared$getParametersUrlPart <- function(parameters = NULL) {
+    if (is.null(parameters) || length(parameters) == 0) {
+      return ("")
+    }
     parametersUrlPart <- "?"
     parameterNames <- names(parameters)
     for (i in 1:length(parameterNames)) {
@@ -53,30 +45,30 @@ kucoin.shared$getParametersUrlPart <- function(parameters) {
     return (parametersUrlPart)
 }
 
-kucoin.api <- list()
-kucoin.api <- function(endpointName, parametersUrlPart = "") {
-  requestUrl <- paste(kucoin.shared$getUrl(endpointName), parametersUrlPart, sep="")
-  message(paste("GET", requestUrl))
-  response.raw <- GET(requestUrl)
+kucoin.api$request <- function(url) {
+  message(paste("GET", url))
+  response.raw <- GET(url)
   response.content.raw <- content(response.raw, "text")
   response.content.parsed <- fromJSON(response.content.raw, flatten = TRUE)
   return(response.content.parsed)  
 }
 
-kucoin.api.listCoins <- kucoin.shared$genericNoParams
+kucoin.api.listCoins <- function() {
+  return (kucoin.api$generic(urlEndpointPart = "/v1/market/open/coins"))
+}
 
 kucoin.api.listTradingSymbolsTick <- function(market = "BTC") {
-  return (kucoin.shared$genericWithParams())
+  return (kucoin.api$generic(urlEndpointPart = "/v1/market/open/symbols"))
 }
 hh <- kucoin.api.listTradingSymbolsTick(market = "ETH")
 gg <- kucoin.api.listCoins()
 
 kucoin.api.recentlyDealOrders <- function (symbol = "KCS-ETH") {
-  return (kucoin.shared$genericWithParams())
+  return (kucoin.api$generic(urlEndpointPart = "/v1/open/deal-orders"))
 }
 aa <- kucoin.api.recentlyDealOrders()
 
 kucoin.api.buyOrderBooks <- function (symbol = "KCS-ETH", limit = 10) {
-  return (kucoin.shared$genericWithParams())
+  return (kucoin.api$generic(urlEndpointPart = "/v1/open/orders-buy"))
 }
 bb <- kucoin.api.buyOrderBooks()
