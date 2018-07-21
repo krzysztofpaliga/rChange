@@ -6,8 +6,9 @@ kucoin.base <- "https://api.kucoin.com"
 kucoin.endpoints <- list()
 kucoin.endpoints.listCoins <- list(name = "listCoins", urlPart = "/v1/market/open/coins")
 kucoin.endpoints.listTradingMarkets <- list(name = "listTradingMarkets", urlPart = "/v1/open/markets")
-kucoin.endpoints.listTradingSymbolsTick <- list(name = "listTradingSymbolsTick", urlPart = "/v1/market/open/symbols", params = list(market = "BTC"))
-
+kucoin.endpoints.listTradingSymbolsTick <- list(name = "listTradingSymbolsTick", urlPart = "/v1/market/open/symbols")
+kucoin.endpoints.recentlyDealOrders <- list(name = "recentlyDealOrder", urlPart="/v1/open/deal-orders")
+kucoin.endpoints.buyOrderBooks <- list(name = "buyOrderBooks", urlPart="/v1/open/orders-buy")
 kucoin.shared <- list()
 
 kucoin.shared.getCallingFunctionsName <- function(level = 1) {
@@ -43,7 +44,7 @@ kucoin.shared$getParametersUrlPart <- function(parameters) {
     for (i in 1:length(parameterNames)) {
       sep <- ""
       if (i > 1) {
-        sep <- ","
+        sep <- "&"
       }
       parameterName = parameterNames[i]
       parameterValue = get(parameterName, parameters)
@@ -70,3 +71,12 @@ kucoin.api.listTradingSymbolsTick <- function(market = "BTC") {
 hh <- kucoin.api.listTradingSymbolsTick(market = "ETH")
 gg <- kucoin.api.listCoins()
 
+kucoin.api.recentlyDealOrders <- function (symbol = "KCS-ETH") {
+  return (kucoin.shared$genericWithParams())
+}
+aa <- kucoin.api.recentlyDealOrders()
+
+kucoin.api.buyOrderBooks <- function (symbol = "KCS-ETH", limit = 10) {
+  return (kucoin.shared$genericWithParams())
+}
+bb <- kucoin.api.buyOrderBooks()
