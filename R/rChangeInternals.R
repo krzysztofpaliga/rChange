@@ -54,10 +54,12 @@ initrChange <- function(baseUrl) {
 
   rChange$api$request <- function(url) {
     message(paste("GET", url))
-    response.raw <- GET(url)
-    response.content.raw <- content(response.raw, "text")
-    response.content.parsed <- fromJSON(response.content.raw, flatten = TRUE)
-    return(response.content.parsed)
+    response <- list()
+    response$raw <- GET(url)
+    response$content <- list()
+    response$content$raw <- content(response$raw, "text")
+    response$content$parsed <- fromJSON(response$content$raw, flatten = TRUE)
+    return(response)
   }
 
   return (rChange)
