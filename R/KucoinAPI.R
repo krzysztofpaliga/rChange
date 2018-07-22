@@ -21,10 +21,19 @@ initKucoinAPI <- function() {
     return (rChange$api$generic(urlEndpointPart = "/v1/open/orders-buy"))
   }
 
-  kucoinAPI$getKlineData <- function (symbol, from, to) {
+  kucoinAPI$getKlineData <- function (symbol, from, to, type, limit) {
     return (rChange$api$generic(urlEndpointPart = "/v1/open/kline"))
   }
 
+  kucoinAPI$parameters <- list()
+  kucoinAPI$parameters$candleUnit <- list(OneMinute = "1min",
+                                          FiveMinutes = "5min",
+                                          FifteenMinutes = "15min",
+                                          ThirtyMinutes = "30min",
+                                          OneHour = "1hour",
+                                          EightHours = "8hour",
+                                          OneDay = "1day",
+                                          OneWeek = "1week")
   return (kucoinAPI)
 }
 
