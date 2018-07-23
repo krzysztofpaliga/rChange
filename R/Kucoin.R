@@ -1,9 +1,10 @@
 source("R/KucoinAPI.R")
+require(rlist)
 
 initKucoin <- function(kucoinAPI) {
-  Kucoin <- list()
+  kucoin <- list()
 
-  Kucoin$fetchHistorical <- function(cryptoCurrency = "ETH",
+  kucoin$fetchHistorical <- function(cryptoCurrency = "ETH",
                                      baseCurrency = "BTC",
                                      from = Sys.Date()-1,
                                      to = Sys.Date(),
@@ -16,5 +17,24 @@ initKucoin <- function(kucoinAPI) {
     return (response)
   }
 
-  return (Kucoin)
+  kucoin$fetchAllHistorical <- function(cryptoCurrency = "ETH",
+                                        baseCurrency = "BTC",
+                                        type=kucoinAPI$parameters$candleUnit$OneHour) {
+    i <- 1
+    responseList <- list()
+    while (TRUE) {
+      from = Sys.Date()-(i*100)
+      to = from + 100
+      response <- kucoin$fetchHistorical(from = from, to = to)
+      if (response$raw$status_code == 200 && length(response$content$parsed$data) > 0)  {
+        responseList <- list.append(responseList, response)
+      } else {
+        break;
+      }
+      i <- i+1
+    }
+    return (responseList)
+  }
+
+  return (kucoin)
 }

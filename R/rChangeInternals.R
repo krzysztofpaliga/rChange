@@ -53,6 +53,7 @@ initrChange <- function(baseUrl) {
   }
 
   rChange$api$request <- function(url) {
+    #cat(paste("GET", url))
     message(paste("GET", url))
     response <- list()
     response$raw <- GET(url)
