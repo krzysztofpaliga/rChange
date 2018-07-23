@@ -1,5 +1,7 @@
 source("R/KucoinAPI.R")
 require(rlist)
+require(reshape2)
+library(anytime)
 
 initKucoin <- function(kucoinAPI) {
   kucoin <- list()
@@ -39,11 +41,12 @@ initKucoin <- function(kucoinAPI) {
                                          from = nextFrom,
                                          to = as.integer(Sys.time()))
       responseData <- response$content$parsed$data
-      isLastPointCurrent <- as.integer(Sys.time()) - responseData[nrow(responseData), 1] /1000 < candleUnitTs
+      isLastPointCurrent <- as.integer(Sys.time()) - responseData[nrow(responseData), 1] /1000 < candleUnitTs /1000
       nextFrom <- responseData[nrow(responseData), 1] + 1
-      if (response$raw$status_code == 200 && !isLastPointCurrent)  {
+      if (response$raw$status_code == 200 && nrow(responseData) > 0)  {
         responseList <- list.append(responseList, response)
-      } else {
+      }
+      if (isLastPointCurrent) {
         break;
       }
     }
@@ -53,9 +56,6 @@ initKucoin <- function(kucoinAPI) {
   kucoin$getAllHistorical <- function(cryptoCurrency = "ETH",
                                       baseCurrency = "BTC",
                                       type=kucoinAPI$parameters$candleUnit$OneHour) {
-    cryptoCurrency = "ETH"
-    baseCurrency = "BTC"
-    type=kucoinAPI$parameters$candleUnit$OneHour
     responseList <- kucoin$fetchAllHistorical(cryptoCurrency = cryptoCurrency,
                                               baseCurrency = baseCurrency,
                                               type = type)
@@ -63,9 +63,13 @@ initKucoin <- function(kucoinAPI) {
     history <- unlist(responseList[1], recursive=FALSE)$content$parsed$data
     for (i in 2:length(responseList)) {
       dataA <- unlist(responseList[i], recursive=FALSE)$content$parsed$data
-      history <- rbind(history, data)
+      history <- rbind(history, dataA)
     }
-    return (history)
+    date <- anytime(history[,1]/1000)
+    high <- history[,3]
+    df <- data.frame(date, high)
+    df <- df[order(df$date),]
+    return (df)
   }
 
   return (kucoin)
