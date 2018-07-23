@@ -23,7 +23,7 @@ test_that("Kucoin$fetchHistorical with default parameters response data has inte
   }
 })
 
-test_that("Kucoin$fetchCompleteHistorical with default parameters returns status code 200 and responseList row length is greater 2", {
+test_that("Kucoin$fetchAllteHistorical with default parameters returns status code 200 and responseList row length is greater 2", {
   responseList <- kucoin$fetchAllHistorical()
   for (response in responseList) {
     expect_equal(response$raw$status_code, 200)
@@ -31,7 +31,7 @@ test_that("Kucoin$fetchCompleteHistorical with default parameters returns status
   expect_gt(length(responseList), 1)
 })
 
-test_that("Kucoin$fetchCompleteHistorical with default parameters doesnt drop data between partial requests",{
+test_that("Kucoin$fetchAllHistorical with default parameters doesnt drop data between partial requests",{
   responseList <- kucoin$fetchAllHistorical()
   firstFrameData <- unlist(responseList[1], recursive=FALSE)$content$parsed$data
   firstFrameInternalTsDifference <- firstFrameData[1,1] - firstFrameData[2,1]
