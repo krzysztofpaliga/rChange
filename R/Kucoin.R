@@ -31,7 +31,7 @@ initKucoin <- function(kucoinAPI) {
                                              to= as.integer(Sys.time()))
     responseList <- list.append(responseList, veryFirstFrame)
     veryFirstFrameData <- veryFirstFrame$content$parsed$data
-    nextFrom <- veryFirstFrameData[nrow(veryFirstFrameData), 1] + 1
+    nextFrom <- (veryFirstFrameData[nrow(veryFirstFrameData), 1])/1000 + 1
     candleUnitTs <- abs(veryFirstFrameData[1,1] - veryFirstFrameData[2,1])
     while (TRUE) {
       response <- kucoin$fetchHistorical(cryptoCurrency = cryptoCurrency,
@@ -41,12 +41,12 @@ initKucoin <- function(kucoinAPI) {
                                          from = nextFrom,
                                          to = as.integer(Sys.time()))
       responseData <- response$content$parsed$data
-      isLastPointCurrent <- as.integer(Sys.time()) - responseData[nrow(responseData), 1] /1000 < candleUnitTs /1000
-      nextFrom <- responseData[nrow(responseData), 1] + 1
-      if (response$raw$status_code == 200 && nrow(responseData) > 0)  {
+      if (response$raw$status_code == 200 && length(responseData) > 0)  {
+        isLastPointCurrent <- as.integer(Sys.time()) - responseData[nrow(responseData), 1] /1000 < candleUnitTs /1000
+        nextFrom <- (responseData[nrow(responseData), 1])/1000 + 1
         responseList <- list.append(responseList, response)
       }
-      if (isLastPointCurrent) {
+      if (length(responseData) == 0 || isLastPointCurrent) {
         break;
       }
     }
@@ -69,7 +69,7 @@ initKucoin <- function(kucoinAPI) {
     high <- history[,3]
     df <- data.frame(date, high)
     df <- df[order(df$date),]
-    return (df)
+    return (unique(df))
   }
 
   kucoin$getMarkets <- function() {
