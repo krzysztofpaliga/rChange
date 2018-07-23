@@ -10,8 +10,8 @@ initKucoin <- function(kucoinAPI) {
                                      to = Sys.Date(),
                                      type=kucoinAPI$parameters$candleUnit$OneHour,
                                      limit = 100) {
-    fromTs <- as.numeric(as.POSIXct(from))
-    toTs <- as.numeric(as.POSIXct(to))
+    fromTs <- ifelse(is.numeric(from), from, as.numeric(as.POSIXct(from)))
+    toTs <- ifelse(is.numeric(to), to, as.numeric(as.POSIXct(to)))
     symbol <- paste(cryptoCurrency, "-", baseCurrency, sep="")
     response <- kucoinAPI$getKlineData(symbol = symbol, from = fromTs, to = toTs, type = type, limit = limit)
     return (response)
@@ -20,18 +20,32 @@ initKucoin <- function(kucoinAPI) {
   kucoin$fetchAllHistorical <- function(cryptoCurrency = "ETH",
                                         baseCurrency = "BTC",
                                         type=kucoinAPI$parameters$candleUnit$OneHour) {
-    i <- 1
     responseList <- list()
+    veryFirstFrame <- kucoin$fetchHistorical(cryptoCurrency = cryptoCurrency,
+                                             baseCurrency = baseCurrency,
+                                             type = type,
+                                             limit = 10000,
+                                             from = Sys.Date() - 10*365,
+                                             to= as.integer(Sys.time()))
+    responseList <- list.append(responseList, veryFirstFrame)
+    veryFirstFrameData <- veryFirstFrame$content$parsed$data
+    nextFrom <- veryFirstFrameData[nrow(veryFirstFrameData), 1] + 1
+    candleUnitTs <- abs(veryFirstFrameData[1,1] - veryFirstFrameData[2,1])
     while (TRUE) {
-      from = Sys.Date()-(i*100)
-      to = from + 100
-      response <- kucoin$fetchHistorical(from = from, to = to)
-      if (response$raw$status_code == 200 && length(response$content$parsed$data) > 0)  {
+      response <- kucoin$fetchHistorical(cryptoCurrency = cryptoCurrency,
+                                         baseCurrency = baseCurrency,
+                                         type = type,
+                                         limit = 10000,
+                                         from = nextFrom,
+                                         to = as.integer(Sys.time()))
+      responseData <- response$content$parsed$data
+      isLastPointCurrent <- as.integer(Sys.time()) - responseData[nrow(responseData), 1] /1000 < candleUnitTs
+      nextFrom <- responseData[nrow(responseData), 1] + 1
+      if (response$raw$status_code == 200 && !isLastPointCurrent)  {
         responseList <- list.append(responseList, response)
       } else {
         break;
       }
-      i <- i+1
     }
     return (responseList)
   }

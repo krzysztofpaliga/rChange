@@ -23,7 +23,12 @@ test_that("Kucoin$fetchHistorical with default parameters response data has inte
   }
 })
 
-test_that("Kucoin$fetchAllteHistorical with default parameters returns status code 200 and responseList row length is greater 2", {
+test_that("Kucoin$fetchHistorical with super old from and todays to returns 800 data points", {
+  response <-kucoin$fetchHistorical(from = Sys.Date()-15*365, to = Sys.Date(), limit = 10000)
+  expect_equal(nrow(response$content$parsed$data), 800)
+})
+
+test_that("Kucoin$fetchAllHistorical with default parameters returns status code 200 and responseList row length is greater 2", {
   responseList <- kucoin$fetchAllHistorical()
   for (response in responseList) {
     expect_equal(response$raw$status_code, 200)
@@ -31,11 +36,12 @@ test_that("Kucoin$fetchAllteHistorical with default parameters returns status co
   expect_gt(length(responseList), 1)
 })
 
-test_that("Kucoin$fetchAllHistorical with default parameters doesnt drop data between partial requests",{
+
+test_that("Kucoin$fetchAllHistorical with default parameters doesnt drop data between partial requests", {
   responseList <- kucoin$fetchAllHistorical()
   firstFrameData <- unlist(responseList[1], recursive=FALSE)$content$parsed$data
   firstFrameInternalTsDifference <- firstFrameData[1,1] - firstFrameData[2,1]
-  for (i in 1:length(responseList)-1) {
+  for (i in 1:(length(responseList)-1)) {
     aFrameData <- unlist(responseList[i], recursive=FALSE)$content$parsed$data
     bFrameData <- unlist(responseList[i+1], recursive=FALSE)$content$parsed$data
     currentTsDifferenceBetweenFrames <- aFrameData[nrow(aFrameData),1] - bFrameData[1,1]
