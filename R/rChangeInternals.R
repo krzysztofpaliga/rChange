@@ -1,7 +1,8 @@
-require("httr")
-require("jsonlite")
-
 initrChange <- function(baseUrl) {
+
+  require("httr")
+  require("jsonlite")
+
   # rChange Base
   rChange <- list()
   rChange$base <- baseUrl
