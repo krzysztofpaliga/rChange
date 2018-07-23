@@ -48,3 +48,8 @@ test_that("Kucoin$fetchAllHistorical with default parameters doesnt drop data be
     expect_equal(firstFrameInternalTsDifference, currentTsDifferenceBetweenFrames)
   }
 })
+
+test_that("Kucoin$getAllHistorical with default parameters returns a list with more than 2400 rows", {
+  historical <- kucoin$getAllHistorical()
+  expect_gt(nrow(historical), 2400)
+})

@@ -50,5 +50,23 @@ initKucoin <- function(kucoinAPI) {
     return (responseList)
   }
 
+  kucoin$getAllHistorical <- function(cryptoCurrency = "ETH",
+                                      baseCurrency = "BTC",
+                                      type=kucoinAPI$parameters$candleUnit$OneHour) {
+    cryptoCurrency = "ETH"
+    baseCurrency = "BTC"
+    type=kucoinAPI$parameters$candleUnit$OneHour
+    responseList <- kucoin$fetchAllHistorical(cryptoCurrency = cryptoCurrency,
+                                              baseCurrency = baseCurrency,
+                                              type = type)
+
+    history <- unlist(responseList[1], recursive=FALSE)$content$parsed$data
+    for (i in 2:length(responseList)) {
+      dataA <- unlist(responseList[i], recursive=FALSE)$content$parsed$data
+      history <- rbind(history, data)
+    }
+    return (history)
+  }
+
   return (kucoin)
 }
