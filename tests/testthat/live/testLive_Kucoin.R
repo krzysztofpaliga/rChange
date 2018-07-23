@@ -53,3 +53,13 @@ test_that("Kucoin$getAllHistorical with default parameters returns a list with m
   historical <- kucoin$getAllHistorical()
   expect_gt(nrow(historical), 2400)
 })
+
+test_that("Kucoin$getMarkets returns a list longer than 2", {
+  marketList <- kucoin$getMarkets()
+  expect_gt(length(marketList), 2)
+})
+
+test_that("Kucoin$getTradedCoinsForMarket with default parameters returns a list longer than 100", {
+  coinList <- kucoin$getTradedCoins()
+  expect_gt(length(coinList), 100)
+})

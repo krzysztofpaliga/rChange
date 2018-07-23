@@ -72,5 +72,19 @@ initKucoin <- function(kucoinAPI) {
     return (df)
   }
 
+  kucoin$getMarkets <- function() {
+    response <- kucoinAPI$listTradingMarkets()
+
+    return (response$content$parsed$data)
+  }
+
+  kucoin$getTradedCoinsForMarket <- function (market = "BTC") {
+    response  <- kucoinApi$listTradingSymbolsTick(market = market)
+    responseData <- response$content$parsed$data
+    tradedCoinList <- responseData$coinType
+
+    return (tradedCoinList)
+  }
+
   return (kucoin)
 }

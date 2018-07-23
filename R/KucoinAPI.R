@@ -25,6 +25,10 @@ initKucoinAPI <- function() {
     return (rChange$api$generic(urlEndpointPart = "/v1/open/kline"))
   }
 
+  kucoinAPI$listTradingMarkets <- function () {
+    return (rChange$api$generic(urlEndpointPart = "/v1/open/markets"))
+  }
+
   kucoinAPI$parameters <- list()
   kucoinAPI$parameters$candleUnit <- list(OneMinute = "1min",
                                           FiveMinutes = "5min",
