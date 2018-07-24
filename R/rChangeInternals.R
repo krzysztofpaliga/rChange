@@ -56,12 +56,11 @@ initrChange <- function(baseUrl) {
   rChange$api$request <- function(url) {
     #cat(paste("GET", url))
     message(paste("GET", url))
-    url <- "https://api.kucoin.com/v1/open/kline?symbol=WAN-BTC&from=1531922401&to=1532441272&type=1hour&limit=10000"
     response <- list()
     response$raw <- GET(url)
     retrySleepTime <- 1
     while (retrySleepTime < 10) {
-      if (response$raw != 200) {
+      if (response$raw$status_code != 200) {
         Sys.sleep(retrySleepTime)
         response$raw <- GET(url)
         retrySleepTime <- retrySleepTime + 1
