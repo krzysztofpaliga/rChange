@@ -1,10 +1,12 @@
 source("R/KucoinAPI.R")
-require(rlist)
-require(reshape2)
-library(anytime)
+
 
 initKucoin <- function(kucoinAPI) {
   kucoin <- list()
+
+  require(rlist)
+  require(reshape2)
+  require(anytime)
 
   kucoin$fetchHistorical <- function(cryptoCurrency = "ETH",
                                      baseCurrency = "BTC",
