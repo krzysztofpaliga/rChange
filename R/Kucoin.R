@@ -97,28 +97,28 @@ initKucoin <- function(kucoinAPI) {
       } else {
         allCoinsHistory <- list()
       }
-      if (length(allCoinsHistory) == 0 || addNewest)
+      if (length(allCoinsHistory) == 0 || addNewest) {
         marketCoinList <- kucoin$getTradedCoinsForMarket(market = market)
-      for (coin in marketCoinList) {
-        if(!is.element(coin, allCoinsHistory$cc) && addNewest) {
-          coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
-                                                             baseCurrency = market,
-                                                             type = type)
-          coinData[["cc"]] <- coin
+        for (coin in marketCoinList) {
+          if(!is.element(coin, allCoinsHistory$cc) && addNewest) {
+            coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                                baseCurrency = market,
+                                                type = type)
+            coinData[["cc"]] <- coin
 
-          coinData <- rbind(allCoinsHistory, coinData)
-        } else {
-          if (addNewest) {
-            #TODO: calculate from on the basis of difference between consecutive date entries (delta ts)
-            from <- as.Date(as.POSIXct(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))) - 2
-            missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
-                                                   baseCurrency = market,
-                                                   type = type,
-                                                   from = from)
-            missingData[["cc"]] <- coin
-            allCoinsHistory <- unique(rbind(allCoinsHistory, missingData))
+            allCoinsHistory <- rbind(allCoinsHistory, coinData)
+          } else {
+            if (addNewest) {
+              #TODO: calculate from on the basis of difference between consecutive date entries (delta ts)
+              from <- as.Date(as.POSIXct(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))) - 2
+              missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                                     baseCurrency = market,
+                                                     type = type,
+                                                     from = from)
+              missingData[["cc"]] <- coin
+              allCoinsHistory <- unique(rbind(allCoinsHistory, missingData))
+            }
           }
-
         }
       }
     } else {
