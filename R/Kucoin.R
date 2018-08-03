@@ -92,7 +92,8 @@ initKucoin <- function(kucoinAPI) {
                                            type = kucoinAPI$parameters$candleUnit$OneHour) {
     allCoinsHistory <- list()
     if (load) {
-      if (file.exists(kucoin$dataHistoricalCSV)) {
+      fileExists <- file.exists(kucoin$dataHistoricalCSV)
+      if (fileExists) {
         allCoinsHistory <- read.csv(kucoin$dataHistoricalCSV, stringsAsFactors = FALSE)[,-1]
       } else {
         allCoinsHistory <- list()
@@ -100,7 +101,7 @@ initKucoin <- function(kucoinAPI) {
       if (length(allCoinsHistory) == 0 || addNewest) {
         marketCoinList <- kucoin$getTradedCoinsForMarket(market = market)
         for (coin in marketCoinList) {
-          if(!is.element(coin, allCoinsHistory$cc) && addNewest) {
+          if((!is.element(coin, allCoinsHistory$cc) && addNewest) || !fileExists ) {
             coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
                                                 baseCurrency = market,
                                                 type = type)
