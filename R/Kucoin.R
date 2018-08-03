@@ -91,7 +91,7 @@ initKucoin <- function(kucoinAPI) {
                                            addNewest = TRUE,
                                            type = kucoinAPI$parameters$candleUnit$OneHour) {
     allCoinsHistory <- list()
-    if (loadSaved) {
+    if (load) {
       if (file.exists(kucoin$dataHistoricalCSV)) {
         allCoinsHistory <- read.csv(kucoin$dataHistoricalCSV, stringsAsFactors = FALSE)[,-1]
       } else {
