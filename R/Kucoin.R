@@ -3,6 +3,7 @@ source("R/KucoinAPI.R")
 
 initKucoin <- function(kucoinAPI) {
   kucoin <- list()
+  kucoin$dataHistoricalCSV <- "dataHistorical.csv"
 
   require(rlist)
   require(reshape2)
@@ -23,13 +24,19 @@ initKucoin <- function(kucoinAPI) {
 
   kucoin$fetchAllHistorical <- function(cryptoCurrency = "ETH",
                                         baseCurrency = "BTC",
-                                        type=kucoinAPI$parameters$candleUnit$OneHour) {
+                                        type=kucoinAPI$parameters$candleUnit$OneHour,
+                                        from = -1) {
     responseList <- list()
+    if (from == -1) {
+      initialFrom <- Sys.Date() - 10*365
+    } else {
+      initialFrom <- from
+    }
     veryFirstFrame <- kucoin$fetchHistorical(cryptoCurrency = cryptoCurrency,
                                              baseCurrency = baseCurrency,
                                              type = type,
                                              limit = 10000,
-                                             from = Sys.Date() - 10*365,
+                                             from = initialFrom,
                                              to= as.integer(Sys.time()))
     responseList <- list.append(responseList, veryFirstFrame)
     veryFirstFrameData <- veryFirstFrame$content$parsed$data
@@ -57,10 +64,12 @@ initKucoin <- function(kucoinAPI) {
 
   kucoin$getAllHistorical <- function(cryptoCurrency = "ETH",
                                       baseCurrency = "BTC",
-                                      type=kucoinAPI$parameters$candleUnit$OneHour) {
+                                      type=kucoinAPI$parameters$candleUnit$OneHour,
+                                      from = -1) {
     responseList <- kucoin$fetchAllHistorical(cryptoCurrency = cryptoCurrency,
                                               baseCurrency = baseCurrency,
-                                              type = type)
+                                              type = type,
+                                              from = from)
 
     history <- unlist(responseList[1], recursive=FALSE)$content$parsed$data
     for (i in 2:length(responseList)) {
@@ -71,7 +80,62 @@ initKucoin <- function(kucoinAPI) {
     high <- history[,3]
     df <- data.frame(date, high)
     df <- df[order(df$date),]
-    return (unique(df))
+    df <- unique(df)
+
+    return (df)
+  }
+
+  kucoin$getAllCoinsHistorical <- function(market = "BTC",
+                                           load = TRUE,
+                                           save = TRUE,
+                                           addNewest = TRUE,
+                                           type = kucoinAPI$parameters$candleUnit$OneHour) {
+    allCoinsHistory <- list()
+    if (loadSaved) {
+      if (file.exists(kucoin$dataHistoricalCSV)) {
+        allCoinsHistory <- read.csv(kucoin$dataHistoricalCSV, stringsAsFactors = FALSE)[,-1]
+      } else {
+        allCoinsHistory <- list()
+      }
+      if (length(allCoinsHistory) == 0 || addNewest)
+        marketCoinList <- kucoin$getTradedCoinsForMarket(market = market)
+      for (coin in marketCoinList) {
+        if(!is.element(coin, allCoinsHistory$cc) && addNewest) {
+          coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                                             baseCurrency = market,
+                                                             type = type)
+          coinData[["cc"]] <- coin
+
+          coinData <- rbind(allCoinsHistory, coinData)
+        } else {
+          if (addNewest) {
+            #TODO: calculate from on the basis of difference between consecutive date entries (delta ts)
+            from <- as.Date(as.POSIXct(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))) - 2
+            missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                                   baseCurrency = market,
+                                                   type = type,
+                                                   from = from)
+            missingData[["cc"]] <- coin
+            allCoinsHistory <- unique(rbind(allCoinsHistory, missingData))
+          }
+
+        }
+      }
+    } else {
+      for (coin in marketCoinList) {
+        coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                        baseCurrency = market,
+                                        type = type)
+        coinData[["cc"]] <- coin
+
+        allCoinsHistory <- rbind(allCoinsHistory, coinData)
+      }
+    }
+
+    if (save) {
+      write.csv(allCoinsHistory, kucoin$dataHistoricalCSV)
+    }
+    return (allCoinsHistory)
   }
 
   kucoin$getMarkets <- function() {

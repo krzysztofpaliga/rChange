@@ -63,3 +63,5 @@ test_that("Kucoin$getTradedCoinsForMarket with default parameters returns a list
   coinList <- kucoin$getTradedCoins()
   expect_gt(length(coinList), 100)
 })
+
+

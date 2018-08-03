@@ -29,6 +29,10 @@ initKucoinAPI <- function() {
     return (rChange$api$generic(urlEndpointPart = "/v1/open/markets"))
   }
 
+  kucoinAPI$getFavouriteSymbols <- function () {
+    return (rChange$api$generic(urlEndpointPart = "/v1/market/fav-symbols"))
+  }
+
   kucoinAPI$parameters <- list()
   kucoinAPI$parameters$candleUnit <- list(OneMinute = "1min",
                                           FiveMinutes = "5min",

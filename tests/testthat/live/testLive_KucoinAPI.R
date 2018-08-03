@@ -4,7 +4,7 @@ source("R/Kucoin.R")
 
 kucoinAPI <- initKucoinAPI()
 
-test_that("kucoinApi$getKlineData is 800 for all candle unit types", {
+test_that("kucoinAPI$getKlineData is 800 for all candle unit types", {
   for (type in kucoinAPI$parameters$candleUnit) {
     if (!(type == kucoinAPI$parameters$candleUnit$OneWeek ||  type == kucoinAPI$parameters$candleUnit$OneDay)) {
 
@@ -16,4 +16,14 @@ test_that("kucoinApi$getKlineData is 800 for all candle unit types", {
     expect_equal(nrow(response$content$parsed$data), 800)
     }
   }
+})
+
+test_that("Kucoin$getFavouriteSymbols returns a status code 200", {
+  response <- kucoinAPI$getFavouriteSymbols()
+  expect_equal(response$raw$status_code, 200)
+})
+
+test_that("KucoinAPI$getFavouriteSymbols returns succes true", {
+  response <- kucoinAPI$getFavouriteSymbols()
+  expect_equal(response$content$parsed$success, TRUE)
 })
