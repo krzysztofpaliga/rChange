@@ -86,9 +86,9 @@ initKucoin <- function(kucoinAPI) {
   }
 
   kucoin$getAllCoinsHistorical <- function(market = "BTC",
-                                           load = TRUE,
-                                           save = TRUE,
-                                           addNewest = TRUE,
+                                           load = FALSE,
+                                           save = FALSE,
+                                           addNewest = FALSE,
                                            type = kucoinAPI$parameters$candleUnit$OneHour) {
     allCoinsHistory <- list()
     if (load) {
