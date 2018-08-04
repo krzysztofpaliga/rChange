@@ -13,23 +13,23 @@ initBitBayAPI <- function() {
     return (url)
   }
 
-  bitBayAPI$getAll <- function(coin="BTC", refCoin="ETH", type="all") {
+  bitBayAPI$getAll <- function(coin="ETH", refCoin="BTC", type="all") {
     return (rChange$api$generic(urlEndpointPart="/Public", getUrl=bitBayAPI$shared$getUrl$public ))
   }
 
-  bitBayAPI$getTicker <- function(coin="BTC", refCoin="ETH", type="ticker") {
+  bitBayAPI$getTicker <- function(coin="ETH", refCoin="BTC", type="ticker") {
     return (rChange$api$generic(urlEndpointPart="/Public", getUrl=bitBayAPI$shared$getUrl$public ))
   }
 
-  bitBayAPI$getMarket <- function(coin="BTC", refCoin="ETH", type="market") {
+  bitBayAPI$getMarket <- function(coin="ETH", refCoin="BTC", type="market") {
     return (rChange$api$generic(urlEndpointPart="/Public", getUrl=bitBayAPI$shared$getUrl$public ))
   }
 
-  bitBayAPI$getOrderbook <- function(coin="BTC", refCoin="ETH", type="orderbook") {
+  bitBayAPI$getOrderbook <- function(coin="ETH", refCoin="BTC", type="orderbook") {
     return (rChange$api$generic(urlEndpointPart="/Public", getUrl=bitBayAPI$shared$getUrl$public ))
   }
 
-  bitBayAPI$getTrades <- function(coin="BTC", refCoin="ETH", type="trades") {
+  bitBayAPI$getTrades <- function(coin="ETH", refCoin="BTC", type="trades") {
     return (rChange$api$generic(urlEndpointPart="/Public", getUrl=bitBayAPI$shared$getUrl$public ))
   }
 
