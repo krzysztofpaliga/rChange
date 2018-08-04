@@ -47,9 +47,13 @@ initrChange <- function(baseUrl) {
   # rChange API Internals
   rChange$api <- list()
 
-  rChange$api$generic <- function(urlEndpointPart) {
+  rChange$api$generic <- function(urlEndpointPart, getUrl=NULL) {
     parameters <- rChange$shared$getCallingFunctionsParameters(level = 2)
-    url <- rChange$shared$getUrl(urlEndpointPart = urlEndpointPart, parameters = parameters)
+    if (is.null(getUrl)) {
+      url <- rChange$shared$getUrl(urlEndpointPart = urlEndpointPart, parameters = parameters)
+    } else {
+      url <- getUrl(urlEndpointPart = urlEndpointPart, parameters = parameters)
+    }
     return (rChange$api$request(url = url))
   }
 

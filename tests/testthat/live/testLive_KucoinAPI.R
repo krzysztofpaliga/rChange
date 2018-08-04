@@ -1,6 +1,6 @@
 context("[live] KucoinAPI")
 setwd("../../../")
-source("R/Kucoin.R")
+source("R/KucoinAPI.R")
 
 kucoinAPI <- initKucoinAPI()
 
