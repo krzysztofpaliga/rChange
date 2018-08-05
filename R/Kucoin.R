@@ -123,6 +123,7 @@ initKucoin <- function(kucoinAPI) {
         }
       }
     } else {
+      marketCoinList <- kucoin$getTradedCoinsForMarket(market = market)
       for (coin in marketCoinList) {
         coinData <- kucoin$getAllHistorical(cryptoCurrency = coin,
                                         baseCurrency = market,

@@ -39,3 +39,6 @@ rsconnect/
 
 # csv
 *.csv
+
+# Scratchbook
+ScratchBook.R
