@@ -111,11 +111,17 @@ initKucoin <- function(kucoinAPI) {
           } else {
             if (addNewest) {
               #TODO: calculate from on the basis of difference between consecutive date entries (delta ts)
-              from <- as.Date(as.POSIXct(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))) - 2
-              missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+              if (length(allCoinsHistory[allCoinsHistory$cc == coin]) == 0) {
+                missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
+                                                       baseCurrency = market,
+                                                       type = type)
+              } else {
+                from <- as.Date(as.POSIXct(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))) - 1
+                missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
                                                      baseCurrency = market,
                                                      type = type,
                                                      from = from)
+              }
               missingData[["cc"]] <- coin
               allCoinsHistory <- unique(rbind(allCoinsHistory, missingData))
             }
