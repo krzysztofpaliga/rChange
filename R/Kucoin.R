@@ -111,8 +111,6 @@ initKucoin <- function(kucoinAPI) {
           } else {
             if (addNewest) {
               #TODO: calculate from on the basis of difference between consecutive date entries (delta ts)
-              print(allCoinsHistory[allCoinsHistory$cc == coin,]$date)
-              print(max(allCoinsHistory[allCoinsHistory$cc == coin,]$date))
               if (length(allCoinsHistory[allCoinsHistory$cc == coin,]$date) == 0) {
                 missingData <- kucoin$getAllHistorical(cryptoCurrency = coin,
                                                        baseCurrency = market,
