@@ -142,6 +142,8 @@ initKucoin <- function(kucoinAPI) {
       }
     }
 
+    allCoinsHistory$date <- anytime(allCoinsHistory$date)
+
     if (save) {
       write.csv(allCoinsHistory, kucoin$dataHistoricalCSV)
     }
