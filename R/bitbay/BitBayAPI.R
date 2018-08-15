@@ -1,7 +1,6 @@
-source("R/rChangeInternals.R")
-
 initBitBayAPI <- function() {
-  rChange <- initrChange(baseUrl = "https://bitbay.pl/API")
+  require(rAPI)
+  rChange <- init_rAPI(baseUrl = "https://bitbay.pl/API")
 
   bitBayAPI <- list()
 

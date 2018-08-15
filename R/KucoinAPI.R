@@ -1,7 +1,6 @@
-source("R/rChangeInternals.R")
-
 initKucoinAPI <- function() {
-  rChange <- initrChange(baseUrl = "https://api.kucoin.com")
+  require(rAPI)
+  rChange <- init_rAPI(baseUrl = "https://api.kucoin.com")
 
   kucoinAPI <- list()
 
