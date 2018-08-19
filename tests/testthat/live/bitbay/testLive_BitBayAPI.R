@@ -1,4 +1,4 @@
-context("[live] KucoinAPI")
+context("[live] BitBayAPI")
 setwd("../../../../")
 source("R/bitbay/BitBayAPI.R")
 

@@ -1,7 +1,6 @@
-source("R/rChangeInternals.R")
-
-initCoinGeckoAPI <- function() {
-  rChange <- initrChange(baseUrl = "https://api.coingecko.com/api/v3")
+init_CoinGeckoAPI <- function() {
+  require(rAPI)
+  rAPI <- init_rAPI(baseUrl = "https://api.coingecko.com/api/v3")
 
   coinGeckoAPI <- list()
 
